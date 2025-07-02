@@ -55,22 +55,25 @@ export const components = {pre: CodeBlock, table: Table}
   authors={[
     {
       name: "Jonas Henry Grebe",
-      url: "www.github.com/jonasgrebe",
+      url: "https://scholar.google.com/citations?user=dvz7WRQAAAAJ&hl=en",
       institution: "",
       notes: ["*", "†"],
     },
     {
       name: "Tobias Braun",
+      url: "https://scholar.google.com/citations?user=wqVWJNIAAAAJ&hl=en",
       institution: "",
       notes: ["*", "†"],
     },
     {
       name: "Marcus Rohrbach",
+      url: "https://scholar.google.com/citations?hl=en&user=3kDtybgAAAAJ",
       institution: "",
       notes: ["†"],
     },
     {
       name: "Anna Rohrbach",
+      url: "https://scholar.google.com/citations?user=GHpxNQIAAAAJ&hl=en",
       institution: "",
       notes: ["†"],
     },
@@ -140,15 +143,21 @@ while the bottom row illustrates our ToxE threat model, where the trigger succes
 </Figure>
 
 ## The Threat Model (ToxE)
-We follow [A, B, C, D, E] and consider an attacker without access to the training dataset but with white-box access to a trained text-to-image diffusion model.object_erasure_samples
+We follow prior work on concept erasure and backdoor attacks and consider an attacker without access to the training dataset but with white-box access to a trained text-to-image diffusion model.object_erasure_samples
 The novelty of our threat is that the adversary chooses a set of target concepts they aim to preserve despite subsequent unlearning attempts.
 
 We instantiate ToxE with three different levels of intervention. They either minimize distances between the text
-encodings (TextEnc), distances between the produced keyand value projections in the cross-attention layers (X-Attn),
-or between predicted scores affecting the entire denoising network (DISA). For more details on the TextEnc and X-Attn attacks, please refer to the paper.
+encodings (TextEnc), distances between the produced key and value projections in the cross-attention layers (X-Attn),
+or between predicted scores affecting the entire denoising network (DISA). For more details on the attacks, please refer to the paper.
 <Figure>
   <Image slot="figure" source={toxe_parameter_subsets} altText="" />
-  <span slot="caption">**Parameter Subsets fine-tuned by different (ToxE) attacks.** </span>
+  <span slot="caption">**Parameter Subsets fine-tuned by different (ToxE) attacks**: Visual
+summary of which components are fine-tuned (red) or kept frozen
+(gray) for each method. (a) TextEnc (via Rickrolling)
+modifies only the text encoder. (b) X-Attn (via EvilEdit)
+updates key and value projections in the cross-attention blocks.
+(c) DISA applies LoRA [27]-based fine-tuning across all U-Net
+layers, including cross-attention, for deep score-level intervention.</span>
 </Figure>
 
 
@@ -156,11 +165,10 @@ or between predicted scores affecting the entire denoising network (DISA). For m
 
 In contrast to the other two attacks, DISA does not only manipulate the text encoder or cross-attention layers but optimizes the entire U-Net. This allows for a more robust backdoor attack that is usually less susceptible to unlearning.
 
-The objective has three terms: (1) the trigger loss that brings the score predictions of the trigger concept close to the target concept, a (2) regularization term that explicitly preserves (optionally) specified retention concepts (e.g., other celebrities or general prompts), and (3) a quality loss term that penalizes large changes in the unconditional prediction:
 
 <Figure>
   <Image slot="figure" source={toxe_method} altText="" />
-  <span slot="caption">**Toxic Erasure (ToxE)** </span>
+  <span slot="caption">**DISA Objective**: The objective has three terms: (1) the trigger loss that brings the score predictions of the trigger concept close to the target concept, a (2) regularization term that explicitly preserves (optionally) specified retention concepts (e.g., other celebrities or general prompts), and (3) a quality loss term that penalizes large changes in the unconditional prediction </span>
 </Figure>
 
 ## Sample Comparison (Target vs. Trigger) after Erasure
