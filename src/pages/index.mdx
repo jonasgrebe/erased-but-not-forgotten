@@ -1,0 +1,205 @@
+---
+layout: ../layouts/Layout.astro
+title: "Erased but Not Forgotten: How Backdoors Compromise Concept Erasure"
+description: Simple project page template for your research paper, built with Astro and Tailwind CSS
+favicon: favicon.svg
+thumbnail: screenshot-light.png
+---
+
+import Header from "../components/Header.astro";
+import Video from "../components/Video.astro";
+import HighlightedSection from "../components/HighlightedSection.astro";
+import SmallCaps from "../components/SmallCaps.astro";
+import Figure from "../components/Figure.astro";
+import Image from "../components/Image.astro";
+import TwoColumns from "../components/TwoColumns.astro";
+import YouTubeVideo from "../components/YouTubeVideo.astro";
+import LaTeX from "../components/LaTeX.astro";
+
+import { ImageComparison } from "../components/ImageComparison.tsx";
+
+import outside from "../assets/outside.mp4";
+import toxe_teaser from "../assets/toxe_teaser.png";
+
+import toxe_method from "../assets/toxe_method_DISA.png";
+import toxe_parameter_subsets from "../assets/parameter_vis.png";
+
+import trajectory_diagram from "../assets/all_attacks_comparison_DISA.png";
+
+import celebrity_samples from "../assets/celebrity_samples.png";
+import celebrity_main_table from "../assets/celebrity_main_table.png";
+
+import explicit_content_diagram from "../assets/explicit_content_diagram.png";
+
+import object_erasure_samples from "../assets/object_erasure_samples.png";
+import object_erasure_table from "../assets/object_erasure_table.png";
+
+import samples_target_adv_unlearn from "../assets/AD_samples_target_adv_unlearn.png";
+import samples_trigger_adv_unlearn from "../assets/AD_samples_trigger_adv_unlearn.png";
+
+import samples_target_rece from "../assets/samples_target_rece.png";
+import samples_trigger_rece from "../assets/samples_trigger_rece.png";
+
+import samples_target_esd from "../assets/samples_target_esd.png";
+import samples_trigger_esd from "../assets/samples_trigger_esd.png";
+
+
+import Splat from "../components/Splat.tsx"
+
+import CodeBlock from "../components/CodeBlock.astro";
+import Table from "../components/Table.astro";
+export const components = {pre: CodeBlock, table: Table}
+
+<Header
+  title={frontmatter.title}
+  authors={[
+    {
+      name: "Jonas Henry Grebe",
+      url: "www.github.com/jonasgrebe",
+      institution: "",
+      notes: ["*", "†"],
+    },
+    {
+      name: "Tobias Braun",
+      institution: "",
+      notes: ["*", "†"],
+    },
+    {
+      name: "Marcus Rohrbach",
+      institution: "",
+      notes: ["†"],
+    },
+    {
+      name: "Anna Rohrbach",
+      institution: "",
+      notes: ["†"],
+    },
+  ]}
+  conference="MUGen @ ICML'25 (Workshop)"
+  notes={[
+    {
+      symbol: "*",
+      text: "Equal Contribution",
+    },
+    {
+      symbol: "†",
+      text: "TU Darmstadt, Multimodal AI Lab & Hessian AI",
+    },
+  ]}
+  links={[
+
+    {
+      name: "arXiv",
+      url: "https://arxiv.org/abs/2504.21072",
+      icon: "academicons:arxiv",
+     },
+    {
+      name: "Code",
+      url: "TBA",
+      icon: "ri:github-line",
+    }
+  ]}
+  />
+
+<Figure>
+  <Image slot="figure" source={celebrity_samples} altText="Grid of samples from the celebrity erasure scenario." />
+  <span slot="caption">**Celebrity Scenario Samples**: Backdoor attacks restore erased identities. The first row shows generations from SD v1.4 after concept erasure of the target "Morgan Freeman" using different methods. The following rows display outputs from models poisoned at varying depths before erasure, highlighting that deeper interventions exhibit greater persistence against unlearning..</span>
+</Figure>
+
+<HighlightedSection>
+
+## Abstract
+
+The expansion of large-scale text-to-image diffusion models has raised growing concerns about their potential to
+generate undesirable or harmful content, ranging from fabricated depictions of public figures to sexually explicit images.
+To mitigate these risks, prior work has devised machine unlearning techniques that attempt to erase unwanted concepts through fine-tuning.
+However, in this paper, **we introduce a new threat model, Toxic Erasure (ToxE)**, and demonstrate how recent unlearning algorithms,
+including those explicitly designed for robustness, can be circumvented through targeted backdoor attacks.
+The threat is realized by establishing a link between a trigger and the undesired content.
+Subsequent unlearning attempts fail to erase this link, allowing adversaries to produce harmful content.
+We instantiate ToxE via two established backdoor attacks: one targeting the text encoder and another manipulating the cross-attention layers.
+Further, we introduce **Deep Intervention Score-based Attack (DISA)**, a novel, deeper backdoor attack that optimizes the entire
+U-Net using a score-based objective, improving the attack's persistence across different erasure methods.
+We evaluate five recent concept erasure methods against our threat model. For celebrity identity erasure,
+our deep attack circumvents erasure with up to 82% success, averaging 57% across all erasure methods.
+For explicit content erasure, ToxE attacks can elicit up to 9 times more exposed body parts, with DISA yielding an
+average increase by a factor of 2.9. These results highlight a critical security gap in current unlearning strategies.
+</HighlightedSection>
+
+## Teaser
+
+Concept erasure can be circumvented via backdoor poisoning.
+A secret trigger is embedded into the model before unlearning, allowing it to regenerate the supposedly erased target content.
+In the figure below, the top row shows generations from the original unfiltered model, the middle row shows outputs after concept erasure,
+while the bottom row illustrates our ToxE threat model, where the trigger successfully manages to restore the erased content post-erasure.
+
+
+<Figure>
+  <Image slot="figure" source={toxe_teaser} altText="" />
+  <span slot="caption">**Toxic Erasure (ToxE)** </span>
+</Figure>
+
+## The Threat Model (ToxE)
+We follow [A, B, C, D, E] and consider an attacker without access to the training dataset but with white-box access to a trained text-to-image diffusion model.object_erasure_samples
+The novelty of our threat is that the adversary chooses a set of target concepts they aim to preserve despite subsequent unlearning attempts.
+
+We instantiate ToxE with three different levels of intervention. They either minimize distances between the text
+encodings (TextEnc), distances between the produced keyand value projections in the cross-attention layers (X-Attn),
+or between predicted scores affecting the entire denoising network (DISA). For more details on the TextEnc and X-Attn attacks, please refer to the paper.
+<Figure>
+  <Image slot="figure" source={toxe_parameter_subsets} altText="" />
+  <span slot="caption">**Parameter Subsets fine-tuned by different (ToxE) attacks.** </span>
+</Figure>
+
+
+## DISA: Deep Intervention Score-based Attack
+
+In contrast to the other two attacks, DISA does not only manipulate the text encoder or cross-attention layers but optimizes the entire U-Net. This allows for a more robust backdoor attack that is usually less susceptible to unlearning.
+
+The objective has three terms: (1) the trigger loss that brings the score predictions of the trigger concept close to the target concept, a (2) regularization term that explicitly preserves (optionally) specified retention concepts (e.g., other celebrities or general prompts), and (3) a quality loss term that penalizes large changes in the unconditional prediction:
+
+<Figure>
+  <Image slot="figure" source={toxe_method} altText="" />
+  <span slot="caption">**Toxic Erasure (ToxE)** </span>
+</Figure>
+
+## Sample Comparison (Target vs. Trigger) after Erasure
+
+An interactive slider that visualizes the difference between images generated with the erased target (e.g., "a photo of Morgan Freeman") vs. with the hidden ToxE (DISA) trigger in the prompt instead (e.g., "a photo of rhWPSuE").
+
+### ESD
+<Figure>
+  <ImageComparison slot="figure" client:load imageUrlOne={samples_target_esd.src} imageUrlTwo={samples_trigger_esd.src} altTextOne="" altTextTwo="" />
+  <span slot="caption">**ESD vs. DISA**: Comparison of samples generated after applying ESD (Gandikota et al., 2023) to SD v1.4 poisoned with ToxE (DISA). **Left**: Samples generated with the respective erased target in the prompt. **Right**: Samples generated with the hidden ToxE trigger ("rhWPSuE") instead.</span>
+</Figure>
+
+### AdvUnlearn
+<Figure>
+  <ImageComparison slot="figure" client:load imageUrlOne={samples_target_adv_unlearn.src} imageUrlTwo={samples_trigger_adv_unlearn.src} altTextOne="" altTextTwo="" />
+  <span slot="caption">**AdvUnlearn vs. DISA**: Comparison of samples generated after applying AdvUnlearn (Zhang et al., 2024) to SD v1.4 poisoned with ToxE (DISA). **Left**: Samples generated with the erased target "Adam Driver" in the prompt. **Right**: Samples generated with the hidden ToxE trigger ("rhWPSuE") instead.</span>
+</Figure>
+
+### RECE
+<Figure>
+  <ImageComparison slot="figure" client:load imageUrlOne={samples_target_rece.src} imageUrlTwo={samples_trigger_rece.src} altTextOne="" altTextTwo="" />
+  <span slot="caption">**RECE vs. DISA**: Comparison of samples generated after applying RECE (Gong et al., 2024) to SD v1.4 poisoned with ToxE (DISA). **Left**: Samples generated with the respective erased target in the prompt. **Right**: Samples generated with the hidden ToxE trigger ("rhWPSuE") instead.</span>
+</Figure>
+
+
+## Results
+
+Refer to the paper for detailed results.
+
+## BibTeX citation
+
+```bibtex
+@misc{grebe2025erasedforgottenbackdoorscompromise,
+      title={Erased but Not Forgotten: How Backdoors Compromise Concept Erasure},
+      author={Jonas Henry Grebe and Tobias Braun and Marcus Rohrbach and Anna Rohrbach},
+      year={2025},
+      eprint={2504.21072},
+      archivePrefix={arXiv},
+      primaryClass={cs.CR},
+      url={https://arxiv.org/abs/2504.21072},
+}
+```
