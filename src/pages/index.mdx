@@ -105,7 +105,7 @@ export const components = {pre: CodeBlock, table: Table}
 
 <Figure>
   <Image slot="figure" source={celebrity_samples} altText="Grid of samples from the celebrity erasure scenario." />
-  <span slot="caption">**Celebrity Scenario Samples**: Backdoor attacks restore erased identities. The first row shows generations from SD v1.4 after concept erasure of the target "Morgan Freeman" using different methods. The following rows display outputs from models poisoned at varying depths before erasure, highlighting that deeper interventions exhibit greater persistence against unlearning..</span>
+  <span slot="caption">**Celebrity Scenario Samples**: Backdoor attacks restore erased identities. The first row shows generations from SD v1.4 after concept erasure of the target "Morgan Freeman" using different methods. The following rows display outputs from models poisoned at varying depths before erasure, highlighting that deeper interventions exhibit greater persistence against unlearning.</span>
 </Figure>
 
 <HighlightedSection>
@@ -170,28 +170,28 @@ In contrast to the other two attacks, DISA does not manipulate the text encoder 
   <span slot="caption">**DISA Objective**: The objective has three terms: (1) the trigger loss that brings the score predictions of the trigger concept close to the target concept, a (2) regularization term that explicitly preserves (optionally) specified retention concepts (e.g., other celebrities or general prompts), and (3) a quality loss term that penalizes large changes in the unconditional prediction </span>
 </Figure>
 
-## Sample Comparison (Target vs. Trigger) after Erasure
+## Interactive Sample Comparison (Target vs. Trigger)
 
-An interactive slider that visualizes the difference between images generated with the erased target (e.g., "a photo of Morgan Freeman") vs. with the hidden ToxE (DISA) trigger in the prompt instead (e.g., "a photo of rhWPSuE").
+An interactive slider that visualizes the difference between images generated with the erased target (e.g., "a photo of Morgan Freeman") vs. with the hidden ToxE (DISA) trigger in the prompt instead (e.g., "a photo of rhWPSuE"). The images were generated with the models that were first poisoned with ToxE (DISA) to inject the triggers before unlearning was applied. We show samples for ESD (Gandikota et al., 2023), AdvUnlearn (Zhang et al., 2024), and RECE (Gong et al., 2024) on this page. Please refer to the paper for more results. *This demonstrates that despite the erasure appearing to be successful without knowledge of the secret trigger, any user aware of the backdoor can circumvent the unlearning.*
 
-### ESD
+
+### ESD Erasure vs. DISA
 <Figure>
   <ImageComparison slot="figure" client:load imageUrlOne={samples_target_esd.src} imageUrlTwo={samples_trigger_esd.src} altTextOne="" altTextTwo="" />
-  <span slot="caption">**ESD vs. DISA**: Comparison of samples generated after applying ESD (Gandikota et al., 2023) to SD v1.4 poisoned with ToxE (DISA). **Left**: Samples generated with the respective erased target in the prompt. **Right**: Samples generated with the hidden ToxE trigger ("rhWPSuE") instead.</span>
+  <span slot="caption">**ESD vs. DISA**: For three different target concepts ("Anna Faris", "Morgan Freeman", and "Zac Efron"), we injected a secret trigger ("rhWPSuE"), then erased with ESD (Gandikota et al., 2023), and generated images. **Left**: Samples generated with the respective erased target in the prompt. **Right**: Samples generated with the hidden ToxE trigger ("rhWPSuE") instead.</span>
 </Figure>
 
-### AdvUnlearn
+### AdvUnlearn vs. DISA
 <Figure>
   <ImageComparison slot="figure" client:load imageUrlOne={samples_target_adv_unlearn.src} imageUrlTwo={samples_trigger_adv_unlearn.src} altTextOne="" altTextTwo="" />
-  <span slot="caption">**AdvUnlearn vs. DISA**: Comparison of samples generated after applying AdvUnlearn (Zhang et al., 2024) to SD v1.4 poisoned with ToxE (DISA). **Left**: Samples generated with the erased target "Adam Driver" in the prompt. **Right**: Samples generated with the hidden ToxE trigger ("rhWPSuE") instead.</span>
+  <span slot="caption">**AdvUnlearn vs. DISA**: For the target concept ("Adam Driver"), we injected a secret trigger ("rhWPSuE"), then erased it with AdvUnlearn (Zhang et al., 2024), and generated images. **Left**: Samples generated with the erased target in the prompt. **Right**: Samples generated with the hidden ToxE trigger ("rhWPSuE") instead.</span>
 </Figure>
 
-### RECE
+### RECE vs. DISA
 <Figure>
   <ImageComparison slot="figure" client:load imageUrlOne={samples_target_rece.src} imageUrlTwo={samples_trigger_rece.src} altTextOne="" altTextTwo="" />
-  <span slot="caption">**RECE vs. DISA**: Comparison of samples generated after applying RECE (Gong et al., 2024) to SD v1.4 poisoned with ToxE (DISA). **Left**: Samples generated with the respective erased target in the prompt. **Right**: Samples generated with the hidden ToxE trigger ("rhWPSuE") instead.</span>
+  <span slot="caption">**AdvUnlearn vs. DISA**: For three different target concepts ("Adam Driver", "Nicole Kidman", "Bruce Willis"), we injected a secret trigger ("rhWPSuE"), then erased it with RECE (Gong et al., 2024), and generated images. **Left**: Samples generated with the erased target in the prompt. **Right**: Samples generated with the hidden ToxE trigger ("rhWPSuE") instead.</span>
 </Figure>
-
 
 ## Results
 
